@@ -64,10 +64,16 @@
 
 <script>
 import { mapState } from 'vuex';
+import { getUserInfo } from '@/api/user.js';
 export default {
   name: 'Mine',
   components: {},
   props: {},
+  created() {
+    if (this.user) {
+      this.loadUserInfo();
+    }
+  },
   computed: {
     ...mapState(['user']),
   },
@@ -87,6 +93,15 @@ export default {
         })
         .catch(() => {
           // on cancel
+        });
+    },
+    loadUserInfo() {
+      getUserInfo()
+        .then((data) => {
+          console.log(data);
+        })
+        .catch((err) => {
+          console.log(err);
         });
     },
   },
