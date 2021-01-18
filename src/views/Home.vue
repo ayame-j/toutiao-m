@@ -11,32 +11,59 @@
         >搜索</van-button
       >
     </van-nav-bar>
-    <van-tabs class="channle-tabs" slot="nav-left" scrollspy v-model="active" animated swipeable>
-      <van-tab title="标签 1">内容 1</van-tab>
-      <van-tab title="标签 2">内容 2</van-tab>
-      <van-tab title="标签 3">内容 3</van-tab>
-      <van-tab title="标签 4">内容 4</van-tab>
+    <van-tabs
+      class="channle-tabs"
+      slot="nav-left"
+      scrollspy
+      v-model="active"
+      animated
+      swipeable
+    >
+      <van-tab
+        :title="channel.name"
+        v-for="channel in channels"
+        :key="channel.id"
+        ><article-list :channel="channel"></article-list
+      ></van-tab>
+
+      <div slot="nav-right" class="placeholder"></div>
       <div slot="nav-right" class="hamburger-btn">
         <i class="iconfont icongengduo"></i>
       </div>
-      <div slot="nav-right" placeholder=""></div>
     </van-tabs>
   </div>
 </template>
 
 <script>
+import { getUserChannels } from '@/api/user';
+import ArticleList from '@/views/ArticleList';
 export default {
   name: 'Home',
-  components: {},
+  components: { ArticleList },
   props: {},
+  created() {
+    this.loadChannels();
+  },
   data() {
-    return { active: 1 };
+    return { active: 0, channels: [] };
+  },
+  methods: {
+    loadChannels() {
+      getUserChannels()
+        .then((data) => {
+          this.channels = data.data.data.channels;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
   },
 };
 </script>
 
 <style lang="less" scoped>
 .home-container {
+  padding-bottom: 100px;
   /deep/ .van-nav-bar__title {
     max-width: unset;
   }
@@ -50,26 +77,31 @@ export default {
       font-size: 32px;
     }
   }
-  /deep/.channle-tabs{
-    .van-tabs__wrap{
+  /deep/.channle-tabs {
+    .van-tabs__wrap {
       height: 82px;
     }
-    .van-tab{
+    .van-tab {
       width: 200px;
       border-right: 1px solid #edeff3;
       font-size: 30px;
       color: #777;
       line-height: normal;
     }
-    .van-tab--active{
+    .van-tab--active {
       color: #333;
     }
-    .van-tabs__line{
+    .van-tabs__line {
       width: 31px !important;
       height: 6px;
       background-color: #3296fa;
     }
-    .hamburger-btn{
+    .placeholder {
+      flex-shrink: 0;
+      width: 66px;
+      height: 80px;
+    }
+    .hamburger-btn {
       position: fixed;
       right: 0;
       width: 66px;
@@ -79,14 +111,14 @@ export default {
       align-items: center;
       background-color: #fff;
       opacity: 0.9;
-      i.iconfont{
+      i.iconfont {
         font-size: 33px;
       }
       &:before {
-        content:"";
+        content: '';
         position: absolute;
-        left:0;
-        width:1px;
+        left: 0;
+        width: 1px;
         height: 100%;
         background-image: url(~@/assets/gradient-gray-line.png);
         background-size: contain;
